@@ -1,0 +1,29 @@
+TARGET = test
+OBJS = main.o
+
+LIBS = -lxenos -lconsole -lxtl -lc
+
+CFLAGS = -O2 -g -Wall
+LDFLAGS = -Wl,-Map,$(TARGET).map
+
+XENON_PREFIX = xenon-
+CC = $(XENON_PREFIX)gcc
+LD = $(XENON_PREFIX)ld
+AR = $(XENON_PREFIX)ar
+OBJCOPY = $(XENON_PREFIX)objcopy
+STRIP = $(XENON_PREFIX)strip
+XEX = $(XENON_PREFIX)xex
+
+all: $(TARGET).xex
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(TARGET).elf: $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+$(TARGET).xex: $(TARGET).elf
+	$(XEX) $< $@
+
+clean:
+	rm -f *.o *.elf *.xex *.map
